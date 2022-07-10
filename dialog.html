@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  <script>
+  var data
+  var formId = 'form'
+  
+  function drawForm() {
+    if (!data) return
+    var outputEl = document.getElementById(formId);
+    var output = ''
+    if (Object.prototype.toString.call(data) === '[object Array]') {
+      for (var i = 0; i < data.length; i++) {
+        if (data[i].length == 1 ) { 
+          if (data[i][0] == '') continue;
+          output += '<input type=\'checkbox\' name=\''+data[i][0]+'\' value=\''+data[i][0]+'\'>'
+          output += data[i][0]
+          output += '<br>'
+        } else if (data[i].length > 1) {
+           if (data[i][0] == '') continue;
+           // left will be used as value
+           // the rest is title
+           output += '<input type=\'checkbox\' name=\''+data[i][0]+'\' value=\''+data[i][0]+'\'>'
+           output += data[i][0] + ' &ndash; '
+           for (var j = 1; j < data[i].length; j++) {
+             if (data[i][j] == '') continue
+             output += data[i][j] + '; '
+           }
+           
+           output += '<br>'
+        }
+      }
+    } else {
+      output += '<p>This cell has no <a href="https://support.google.com/drive/answer/139705?hl=en">Data validation</a>.</p>';
+    } 
+    
+    outputEl.innerHTML = output
+  }
+  
+  
+  var onData = function(result) {
+    data = result
+    drawForm()
+  }
+  google.script.run.withSuccessHandler(onData).getValidationData();
+  
+  function set() {
+    google.script.run.withSuccessHandler(x=>{
+    }).fillCell(document.getElementById(formId))
+  }
+  
+  function update() {
+    google.script.run.withSuccessHandler(x=>{
+    }).updateCell(document.getElementById(formId))
+  }
+  
+  function reset() {
+    drawForm()
+  }
+
+  </script>
+  </head>
+  <body>
+    <div style='position:fixed; padding-top: 10px; background-color: white; height: 30px; width: 100%; top: 0;'>
+      <input type="button" value="Set" onclick="set()" />
+      <input type="button" value="Update" onclick="update()" />
+      <input type="button" value="Reset" onclick="reset()" />
+      <input type="button" value="Refresh validation" onclick="google.script.run.showDialog()" />
+    </div>
+    <div style="font-family: sans-serif; padding-top: 30px;">
+      <form id="form" name="form">
+        
+      </form>
+    </div>
+  </body>
+<html>
